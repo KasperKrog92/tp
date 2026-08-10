@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>TP-bil oversigt · Letbanen</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --c-cmy: #2a78d6; --c-drive: #eb6834; --c-ar: #1baf7a;
+    --ink-on-cmy: #fff; --ink-on-ar: #0b0b0b;
+    --warn: #fab219; --chip-bg: rgba(11,11,11,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #fff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --c-cmy: #3987e5; --c-drive: #d95926; --c-ar: #199e70;
+      --chip-bg: rgba(255,255,255,0.07);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.45; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 20px; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 14px; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tab { font: inherit; font-size: 14px; padding: 7px 16px; border: 1px solid var(--baseline);
+    border-radius: 999px; background: var(--surface-1); color: var(--text-primary); cursor: pointer; }
+  .tab:hover { background: var(--chip-bg); }
+  .tab.on { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); font-weight: 700; }
+  .tab .d { font-size: 11px; opacity: .7; margin-left: 5px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .controls label { font-size: 13px; color: var(--text-secondary); }
+  #timeInput { width: 76px; font-size: 17px; font-weight: 600; text-align: center; padding: 5px 6px;
+    border: 1px solid var(--baseline); border-radius: 8px; background: var(--surface-1);
+    color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  button { font: inherit; font-size: 13px; padding: 5px 11px; border: 1px solid var(--baseline);
+    border-radius: 8px; background: var(--surface-1); color: var(--text-primary); cursor: pointer; }
+  button:hover { background: var(--chip-bg); }
+  button.primary { border-color: var(--c-cmy); color: var(--c-cmy); font-weight: 600; }
+  button.primary.live { background: var(--c-cmy); color: var(--ink-on-cmy); }
+  button.primary.live:hover { background: var(--c-cmy); }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+  .presets button { padding: 4px 9px; font-size: 12.5px; color: var(--text-secondary); }
+  #slider { width: 100%; margin-top: 10px; accent-color: var(--c-cmy); }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 640px) { .tiles { grid-template-columns: 1fr; } }
+  .tile { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .tile .head { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-secondary); }
+  .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .tile .num { font-size: 30px; font-weight: 700; margin: 2px 0 4px; }
+  .tile .chips { display: flex; flex-wrap: wrap; gap: 5px; min-height: 24px; }
+  .chip { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    background: var(--chip-bg); font-variant-numeric: tabular-nums; }
+  .none { color: var(--text-muted); font-size: 12.5px; align-self: center; }
+
+  .carlines { display: grid; gap: 7px; font-size: 13.5px; }
+  .carline { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .carline .id { font-weight: 700; min-width: 56px; }
+  .carline .loc { font-weight: 600; }
+  .carline .next { color: var(--text-secondary); }
+  .carline .muted { color: var(--text-muted); }
+
+  .tl-scroll { overflow-x: auto; }
+  .tl { position: relative; min-width: 760px; padding: 26px 0 6px; }
+  .tl-grid { position: absolute; inset: 26px 0 6px 64px; }
+  .tl-grid .gline { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+  .tl-grid .glabel { position: absolute; top: -20px; transform: translateX(-50%);
+    font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .row { position: relative; height: 46px; display: flex; align-items: center; }
+  .row .lbl { width: 64px; flex: none; font-size: 12.5px; font-weight: 700; color: var(--text-secondary); }
+  .track { position: relative; flex: 1; height: 100%; cursor: crosshair; }
+  .seg { position: absolute; top: 50%; transform: translateY(-50%); height: 20px; border-radius: 4px; }
+  .seg.cmy { background: var(--c-cmy); }
+  .seg.ar { background: var(--c-ar); }
+  .seg.drive { background: var(--c-drive); height: 28px; min-width: 7px; z-index: 2; }
+  .seg .seglbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .04em; pointer-events: none; }
+  .seg.cmy .seglbl { color: var(--ink-on-cmy); }
+  .seg.ar .seglbl { color: var(--ink-on-ar); }
+  .warnmark { position: absolute; top: 1px; transform: translateX(-50%); font-size: 11px;
+    line-height: 1; z-index: 3; cursor: help; }
+  .cursor { position: absolute; top: 22px; bottom: 4px; width: 2px; margin-left: -1px;
+    background: var(--text-primary); opacity: .65; z-index: 4; pointer-events: none; }
+  .cursor .bub { position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    background: var(--text-primary); color: var(--page); font-size: 11px; font-weight: 700;
+    padding: 1px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  #tip { position: fixed; z-index: 50; display: none; max-width: 300px; background: var(--surface-1);
+    color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.18); padding: 8px 10px; font-size: 12.5px; pointer-events: none; }
+  #tip .t1 { font-weight: 700; }
+  #tip .t2 { color: var(--text-secondary); }
+
+  details { margin-top: 4px; }
+  summary { cursor: pointer; font-size: 13.5px; color: var(--text-secondary); }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--grid); }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
+  td.num, th.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .foot { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
+  .placeholder { text-align: center; padding: 48px 20px; color: var(--text-secondary); }
+  .placeholder .big { font-size: 34px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>TP-bil oversigt</h1>
+  <p class="sub">Letbanen · CMY = depot/parkeringscenter · AR = Aarhus H · alle ture er planlagt til 12 min</p>
+
+  <div class="tabs" id="dayTabs"></div>
+
+  <div id="appArea">
+    <div class="card">
+      <div class="controls">
+        <label for="timeInput">Klokkeslæt</label>
+        <input id="timeInput" value="15:30" inputmode="numeric" aria-label="Klokkeslæt">
+        <button class="primary" id="nowBtn" title="Følg klokken – opdaterer automatisk">Nu</button>
+        <button id="prevBtn" title="Forrige hændelse">◀ Forrige</button>
+        <button id="nextBtn" title="Næste hændelse">Næste ▶</button>
+        <div class="presets" id="presets"></div>
+      </div>
+      <input type="range" id="slider" min="400" max="1445" step="1" value="930" aria-label="Vælg tidspunkt">
+    </div>
+
+    <div class="card"><div class="tiles" id="tiles"></div></div>
+    <div class="card"><div class="carlines" id="carlines"></div></div>
+
+    <div class="card">
+      <div class="tl-scroll"><div class="tl" id="tl"></div></div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--c-cmy)"></span>På CMY (depot)</span>
+        <span><span class="dot" style="background:var(--c-ar)"></span>På Aarhus H</span>
+        <span><span class="dot" style="background:var(--c-drive)"></span>Kører (12 min)</span>
+        <span>⚠ = stram overlevering (0–7 min buffer)</span>
+        <span style="color:var(--text-muted)">Klik på tidslinjen for at vælge tidspunkt</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary id="tblSummary">Alle ture som tabel</summary>
+        <table id="tbl">
+          <thead><tr><th>Bil</th><th class="num">Afgang</th><th class="num">Ankomst</th><th>Retning</th><th class="num">Vagt</th><th>Kontekst</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </div>
+  </div>
+
+  <div id="placeholderArea" class="card placeholder" style="display:none">
+    <div class="big">🚧</div>
+    <div><b id="phDay"></b>-planen er ikke lagt ind endnu.</div>
+    <div style="margin-top:6px;font-size:13px">TP-linjerne skal aflæses fra dagens vagtplan — når de er lagt ind, virker fanen præcis som Man–tors.</div>
+  </div>
+
+  <p class="foot">Tider efter midnat vises som 24:xx/25:xx (fx 25:42 = 01:42). Skriv fx <b>15:30</b>, <b>1530</b> eller <b>00:20</b> (tolkes som 24:20).
+  Grundlag: den gældende vagtplan; ved planskift skal datagrundlaget opdateres.</p>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   DATA — én blok pr. dagtype.
+   En tur: { dep:"7:14", to:"AR"|"CMY", vagt:"1116", note:"..." }
+   (fra-sted og ankomsttid udledes automatisk: fra = det modsatte af to,
+   ankomst = afgang + 12 min)
+   En advarsel: { car:"TP-003", t:"16:21", txt:"..." }
+   Ny dagtype: udfyld cars-listen — sæt cars:null for "ikke lagt ind".
+   ===================================================================== */
+const DAYS = [
+  { key: "man-tors", label: "Man–tors", dows: [1,2,3,4],
+    warnings: [
+      { car: "TP-003", t: "16:21", txt: "0 min buffer: 1132 ankommer AR 16:21 — 1117 kører retur 16:21" },
+      { car: "TP-001", t: "15:16", txt: "5 min buffer på CMY: 1110 afleverer 15:11 — 1130 kører 15:16" },
+      { car: "TP-003", t: "15:15", txt: "5 min buffer på AR: 1128 ankommer 15:10 — 1114 kører 15:15" },
+      { car: "TP-004", t: "15:21", txt: "7 min buffer på AR: 1129 ankommer 15:14 — 1113 kører 15:21" },
+      { car: "TP-002", t: "16:17", txt: "7 min buffer på AR: 1131 ankommer 16:10 — 1116 kører 16:17" },
+    ],
+    cars: [
+      { id: "TP-001", moves: [
+        { dep: "7:14",  to: "AR",  vagt: "1116", note: "vagtstart" },
+        { dep: "9:30",  to: "CMY", vagt: "1101", note: "vagtslut · medtager 1106" },
+        { dep: "10:31", to: "AR",  vagt: "1120", note: "vagtstart" },
+        { dep: "13:00", to: "CMY", vagt: "1104", note: "vagtslut" },
+        { dep: "13:45", to: "AR",  vagt: "1124", note: "vagtstart" },
+        { dep: "14:59", to: "CMY", vagt: "1110", note: "vagtslut" },
+        { dep: "15:16", to: "AR",  vagt: "1130", note: "vagtstart · kun 5 min efter aflevering" },
+        { dep: "15:56", to: "CMY", vagt: "1115", note: "vagtslut" },
+        { dep: "16:29", to: "AR",  vagt: "1134", note: "vagtstart" },
+        { dep: "20:14", to: "CMY", vagt: "1122", note: "vagtslut · bilen hjemme for natten" },
+      ]},
+      { id: "TP-002", moves: [
+        { dep: "7:46",  to: "AR",  vagt: "1117", note: "vagtstart" },
+        { dep: "10:29", to: "CMY", vagt: "1108", note: "vagtslut" },
+        { dep: "11:47", to: "AR",  vagt: "1121", note: "vagtstart" },
+        { dep: "13:30", to: "CMY", vagt: "1103", note: "vagtslut" },
+        { dep: "14:16", to: "AR",  vagt: "1126", note: "vagtstart" },
+        { dep: "15:06", to: "CMY", vagt: "1112", note: "vagtslut" },
+        { dep: "15:58", to: "AR",  vagt: "1131", note: "vagtstart" },
+        { dep: "16:17", to: "CMY", vagt: "1116", note: "vagtslut · 7 min efter aflevering" },
+        { dep: "16:47", to: "AR",  vagt: "1135", note: "vagtstart" },
+        { dep: "22:29", to: "CMY", vagt: "1129", note: "vagtslut · bilen stod på AR i 5½ time" },
+      ]},
+      { id: "TP-003", moves: [
+        { dep: "8:17",  to: "AR",  vagt: "1118", note: "vagtstart" },
+        { dep: "11:29", to: "CMY", vagt: "1102", note: "vagtslut" },
+        { dep: "12:26", to: "AR",  vagt: "1122", note: "vagtstart" },
+        { dep: "13:56", to: "CMY", vagt: "1109", note: "vagtslut" },
+        { dep: "14:58", to: "AR",  vagt: "1128", note: "vagtstart" },
+        { dep: "15:15", to: "CMY", vagt: "1114", note: "vagtslut · 5 min efter aflevering" },
+        { dep: "16:09", to: "AR",  vagt: "1132", note: "vagtstart" },
+        { dep: "16:21", to: "CMY", vagt: "1117", note: "vagtslut · 0 min buffer — direkte overlevering" },
+        { dep: "19:01", to: "AR",  vagt: "2105", note: "midt i vagt · efter pause" },
+        { dep: "23:23", to: "CMY", vagt: "1134", note: "midt i vagt · henter tog i CMY til natrunden" },
+      ]},
+      { id: "TP-004", moves: [
+        { dep: "9:22",  to: "AR",  vagt: "1116", note: "midt i vagt · medtager 1119" },
+        { dep: "12:59", to: "CMY", vagt: "1111", note: "vagtslut" },
+        { dep: "13:17", to: "AR",  vagt: "1123", note: "vagtstart" },
+        { dep: "14:29", to: "CMY", vagt: "1107", note: "vagtslut" },
+        { dep: "15:02", to: "AR",  vagt: "1129", note: "vagtstart" },
+        { dep: "15:21", to: "CMY", vagt: "1113", note: "vagtslut · 7 min efter aflevering" },
+        { dep: "16:16", to: "AR",  vagt: "1133", note: "vagtstart" },
+        { dep: "17:00", to: "CMY", vagt: "1118", note: "vagtslut · bilen færdig for dagen" },
+      ]},
+    ]},
+  { key: "fredag", label: "Fredag", dows: [5], warnings: [], cars: null },
+  { key: "lordag", label: "Lørdag", dows: [6], warnings: [], cars: null },
+  { key: "sondag", label: "Søndag", dows: [0], warnings: [], cars: null },
+];
+
+/* ============ hjælpere ============ */
+const T = s => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
+const fmt = t => Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0");
+const DUR = 12;
+DAYS.forEach(day => (day.cars || []).forEach(c => c.moves.forEach(m => {
+  m.dep = T(m.dep); m.arr = m.dep + DUR; m.from = m.to === "AR" ? "CMY" : "AR";
+})));
+const AXIS_MIN = 400, AXIS_MAX = 1445;
+const pct = t => (t - AXIS_MIN) / (AXIS_MAX - AXIS_MIN) * 100;
+
+let day = DAYS[0];
+let cur = T("15:30");
+let EVENTS = [];
+
+/* ============ dags-faner ============ */
+const tabsEl = document.getElementById("dayTabs");
+const appArea = document.getElementById("appArea");
+const phArea = document.getElementById("placeholderArea");
+DAYS.forEach(d => {
+  const b = document.createElement("button");
+  b.className = "tab"; b.dataset.key = d.key;
+  b.innerHTML = d.label + (d.cars ? "" : " <span class='d'>· mangler</span>");
+  b.addEventListener("click", () => { location.hash = d.key; selectDay(d); });
+  tabsEl.appendChild(b);
+});
+function selectDay(d) {
+  day = d;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.key === d.key));
+  if (!d.cars) {
+    appArea.style.display = "none"; phArea.style.display = "";
+    document.getElementById("phDay").textContent = d.label;
+    return;
+  }
+  appArea.style.display = ""; phArea.style.display = "none";
+  EVENTS = [...new Set(d.cars.flatMap(c => c.moves.flatMap(m => [m.dep, m.arr])))].sort((a, b) => a - b);
+  buildTimeline(); buildTable();
+  setTime(cur);
+}
+
+/* ============ tilstandsberegning ============ */
+function carState(car, t) {
+  let loc = "CMY", since = null, lastMove = null;
+  for (const m of car.moves) {
+    if (t < m.dep) return { st: loc, since, lastMove, next: m };
+    if (t < m.arr) return { st: "DRIVE", move: m, next: car.moves[car.moves.indexOf(m) + 1] || null };
+    loc = m.to; since = m.arr; lastMove = m;
+  }
+  return { st: loc, since, lastMove, next: null };
+}
+function segsFor(car) {
+  const out = []; let loc = "CMY", t0 = AXIS_MIN;
+  for (const m of car.moves) {
+    out.push({ type: loc, a: t0, b: m.dep, before: m });
+    out.push({ type: "DRIVE", a: m.dep, b: m.arr, move: m });
+    loc = m.to; t0 = m.arr;
+  }
+  out.push({ type: loc, a: t0, b: AXIS_MAX, before: null });
+  return out;
+}
+
+/* ============ tooltip ============ */
+const tip = document.getElementById("tip");
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.style.display = "block";
+  const pad = 14, w = tip.offsetWidth, hgt = tip.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - pad;
+  if (y + hgt > innerHeight - 8) y = ev.clientY - hgt - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.style.display = "none"; }
+
+/* ============ tidslinje ============ */
+const tl = document.getElementById("tl");
+let cursor;
+function buildTimeline() {
+  tl.innerHTML = "";
+  const grid = document.createElement("div");
+  grid.className = "tl-grid";
+  for (let h = 7; h <= 24; h++) {
+    const x = pct(h * 60);
+    const l = document.createElement("div");
+    l.className = "gline"; l.style.left = x + "%"; grid.appendChild(l);
+    const lab = document.createElement("div");
+    lab.className = "glabel"; lab.style.left = x + "%"; lab.textContent = h + ":00"; grid.appendChild(lab);
+  }
+  tl.appendChild(grid);
+  day.cars.forEach(car => {
+    const row = document.createElement("div"); row.className = "row";
+    const lbl = document.createElement("div"); lbl.className = "lbl"; lbl.textContent = car.id;
+    const track = document.createElement("div"); track.className = "track";
+    segsFor(car).forEach(s => {
+      const el = document.createElement("div");
+      el.className = "seg " + (s.type === "DRIVE" ? "drive" : s.type.toLowerCase());
+      el.style.left = "calc(" + pct(s.a) + "% + 1px)";
+      el.style.width = "calc(" + Math.max(pct(s.b) - pct(s.a), 0) + "% - 2px)";
+      if (s.type !== "DRIVE" && (s.b - s.a) > 55) {
+        const t = document.createElement("span");
+        t.className = "seglbl"; t.textContent = s.type; el.appendChild(t);
+      }
+      let html;
+      if (s.type === "DRIVE") {
+        const m = s.move;
+        html = "<div class='t1'>" + car.id + " kører " + m.from + " → " + m.to + "</div>" +
+               "<div class='t2'>" + fmt(m.dep) + "–" + fmt(m.arr) + " · vagt " + m.vagt + "<br>" + m.note + "</div>";
+      } else {
+        const nextTxt = s.before ? "Næste tur: " + fmt(s.before.dep) + " → " + s.before.to + " med vagt " + s.before.vagt :
+          "ikke flere ture i dag";
+        html = "<div class='t1'>" + car.id + " står på " + (s.type === "CMY" ? "CMY (depot)" : "Aarhus H") + "</div>" +
+               "<div class='t2'>" + fmt(s.a) + "–" + fmt(s.b) + "<br>" + nextTxt + "</div>";
+      }
+      el.addEventListener("mousemove", ev => showTip(html, ev));
+      el.addEventListener("mouseleave", hideTip);
+      track.appendChild(el);
+    });
+    day.warnings.filter(w => w.car === car.id).forEach(w => {
+      const el = document.createElement("div");
+      el.className = "warnmark"; el.style.left = pct(T(w.t)) + "%";
+      el.textContent = "⚠"; el.setAttribute("title", w.txt);
+      el.addEventListener("mousemove", ev => showTip("<div class='t1'>⚠ Stram overlevering</div><div class='t2'>" + w.txt + "</div>", ev));
+      el.addEventListener("mouseleave", hideTip);
+      track.appendChild(el);
+    });
+    track.addEventListener("click", ev => {
+      const r = track.getBoundingClientRect();
+      setLive(false);
+      setTime(Math.round(AXIS_MIN + (ev.clientX - r.left) / r.width * (AXIS_MAX - AXIS_MIN)));
+    });
+    row.appendChild(lbl); row.appendChild(track);
+    tl.appendChild(row);
+  });
+  cursor = document.createElement("div");
+  cursor.className = "cursor";
+  cursor.innerHTML = "<div class='bub'></div>";
+  tl.appendChild(cursor);
+}
+
+/* ============ status ============ */
+const tilesEl = document.getElementById("tiles");
+const carlinesEl = document.getElementById("carlines");
+function render(t) {
+  const states = day.cars.map(c => ({ car: c, s: carState(c, t) }));
+  const at = { CMY: [], AR: [], DRIVE: [] };
+  states.forEach(x => at[x.s.st].push(x));
+  const tile = (label, color, list, extra) =>
+    "<div class='tile'><div class='head'><span class='dot' style='background:" + color + "'></span>" + label + "</div>" +
+    "<div class='num'>" + list.length + "</div><div class='chips'>" +
+    (list.length ? list.map(x => "<span class='chip'>" + x.car.id + (extra ? extra(x) : "") + "</span>").join("") :
+      "<span class='none'>ingen</span>") + "</div></div>";
+  tilesEl.innerHTML =
+    tile("På CMY (depot)", "var(--c-cmy)", at.CMY) +
+    tile("På Aarhus H", "var(--c-ar)", at.AR) +
+    tile("Ude at køre", "var(--c-drive)", at.DRIVE, x => " " + x.s.move.from + "→" + x.s.move.to);
+  carlinesEl.innerHTML = states.map(x => {
+    const s = x.s;
+    let loc, since = "", next = "";
+    if (s.st === "DRIVE") {
+      loc = "<span class='loc' style='color:var(--c-drive)'>kører " + s.move.from + " → " + s.move.to + "</span>";
+      since = "<span class='muted'>(" + fmt(s.move.dep) + "–" + fmt(s.move.arr) + ", vagt " + s.move.vagt + ")</span>";
+      if (s.next) next = "<span class='next'>Derefter: " + fmt(s.next.dep) + " → " + s.next.to + " (vagt " + s.next.vagt + ")</span>";
+    } else {
+      loc = "<span class='loc'>står på " + (s.st === "CMY" ? "CMY" : "Aarhus H") + "</span>";
+      since = "<span class='muted'>" + (s.since ? "(siden " + fmt(s.since) + (s.lastMove ? ", stillet af vagt " + s.lastMove.vagt : "") + ")" : "(fra nattens start)") + "</span>";
+      next = s.next ?
+        "<span class='next'>Næste tur: " + fmt(s.next.dep) + " → " + s.next.to + " med vagt " + s.next.vagt + "</span>" :
+        "<span class='next'>Ikke flere ture i dag.</span>";
+    }
+    return "<div class='carline'><span class='id'>" + x.car.id + "</span> " + loc + " " + since + " " + next + "</div>";
+  }).join("");
+  cursor.style.left = "calc(64px + (100% - 64px) * " + ((t - AXIS_MIN) / (AXIS_MAX - AXIS_MIN)) + ")";
+  cursor.querySelector(".bub").textContent = fmt(t);
+}
+
+/* ============ tabel ============ */
+function buildTable() {
+  const all = day.cars.flatMap(c => c.moves.map(m => ({ car: c.id, ...m }))).sort((a, b) => a.dep - b.dep);
+  document.getElementById("tblSummary").textContent = "Alle " + all.length + " ture som tabel";
+  document.querySelector("#tbl tbody").innerHTML = all.map(m =>
+    "<tr><td>" + m.car + "</td><td class='num'>" + fmt(m.dep) + "</td><td class='num'>" + fmt(m.arr) + "</td>" +
+    "<td>" + m.from + " → " + m.to + "</td><td class='num'>" + m.vagt + "</td><td>" + m.note + "</td></tr>"
+  ).join("");
+}
+
+/* ============ tidsstyring ============ */
+const input = document.getElementById("timeInput");
+const slider = document.getElementById("slider");
+function setTime(t, skipInput) {
+  cur = Math.max(AXIS_MIN, Math.min(AXIS_MAX, Math.round(t)));
+  slider.value = cur;
+  if (!skipInput) input.value = fmt(cur);
+  if (day.cars) render(cur);
+}
+function parseTime(str) {
+  const m = String(str).trim().match(/^(\d{1,2})[:.,·]?\s?(\d{2})$/);
+  if (!m) return null;
+  let h = +m[1]; const min = +m[2];
+  if (min > 59) return null;
+  if (h < 4) h += 24;
+  return h * 60 + min;
+}
+input.addEventListener("change", () => {
+  const t = parseTime(input.value);
+  if (t !== null) { setLive(false); setTime(t); } else input.value = fmt(cur);
+});
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    const t = parseTime(input.value);
+    if (t !== null) { setLive(false); setTime(t); } else input.value = fmt(cur);
+    input.blur();
+  }
+});
+slider.addEventListener("input", () => { setLive(false); setTime(+slider.value, true); });
+slider.addEventListener("change", () => { setLive(false); setTime(+slider.value); });
+/* "Nu"-tilstand: følger klokken, indtil brugeren selv vælger et tidspunkt */
+const nowBtn = document.getElementById("nowBtn");
+let live = false;
+function nowMinutes() {
+  const d = new Date();
+  let t = d.getHours() * 60 + d.getMinutes();
+  if (d.getHours() < 4) t += 1440;
+  return t;
+}
+function setLive(on) {
+  live = on;
+  nowBtn.classList.toggle("live", on);
+  if (on) setTime(nowMinutes());
+}
+nowBtn.addEventListener("click", () => setLive(true));
+setInterval(() => { if (live) setTime(nowMinutes()); }, 30000);
+document.addEventListener("visibilitychange", () => {
+  if (live && !document.hidden) setTime(nowMinutes());
+});
+document.getElementById("prevBtn").addEventListener("click", () => {
+  const t = [...EVENTS].reverse().find(e => e < cur);
+  if (t !== undefined) { setLive(false); setTime(t); }
+});
+document.getElementById("nextBtn").addEventListener("click", () => {
+  const t = EVENTS.find(e => e > cur);
+  if (t !== undefined) { setLive(false); setTime(t); }
+});
+const presetsEl = document.getElementById("presets");
+["7:30", "9:30", "12:00", "15:30", "17:30", "20:00", "23:30"].forEach(p => {
+  const b = document.createElement("button");
+  b.textContent = p;
+  b.addEventListener("click", () => { setLive(false); setTime(T(p)); });
+  presetsEl.appendChild(b);
+});
+
+/* ============ init ============ */
+const hashDay = DAYS.find(d => d.key === location.hash.replace("#", ""));
+const dowDay = DAYS.find(d => d.dows.includes(new Date().getDay()));
+selectDay(hashDay || dowDay || DAYS[0]);
+setLive(true);
+</script>
+</body>
+</html>
