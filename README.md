@@ -4,6 +4,10 @@ Statisk side (én fil, `index.html`, ingen dependencies). Viser TP-bilernes rota
 pr. dagtype med interaktiv "hvor er bilerne kl. X"-visning. **Ingen persondata** —
 kun vagtnumre og tider. Siden er markeret `noindex`.
 
+Terminologi: siden bruger **CMC** (området med kontrolcenter og førerbygning,
+hvor TP-bilerne holder) — ikke CMY, som specifikt er togenes opstillingsområde
+(Y = yard). CMC er den forkortelse, førerne bruger i daglig tale om stedet.
+
 Siden åbner i **"Nu"-tilstand**: tidspunktet sættes til klokken lige nu og følger
 med automatisk (opdaterer hvert 30. sekund + når fanen får fokus igen). Vælger
 brugeren selv et tidspunkt (felt, slider, presets, ◀/▶ eller klik på tidslinjen),
@@ -28,7 +32,7 @@ eget git-repo, adskilt fra resten af vagtplan-projektet.
 Al data ligger i `DAYS`-blokken øverst i `index.html`'s `<script>` — én blok pr.
 dagtype (Man–tors er udfyldt; Fredag/Lørdag/Søndag står som `cars: null` og viser
 en pladsholder, indtil de udfyldes). Format er dokumenteret i kommentaren over
-blokken: en tur er `{ dep:"7:14", to:"AR"|"CMY", vagt:"1116", note:"..." }` —
+blokken: en tur er `{ dep:"7:14", to:"AR"|"CMC", vagt:"1116", note:"..." }` —
 fra-sted og ankomst (+12 min) udledes automatisk.
 
 Fredags-/weekendplanernes TP-linjer skal aflæses fra de fysiske vagtplaner
