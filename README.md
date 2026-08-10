@@ -30,16 +30,18 @@ eget git-repo, adskilt fra resten af vagtplan-projektet.
 ## Opdatering af data
 
 Al data ligger i `DAYS`-blokken øverst i `index.html`'s `<script>` — én blok pr.
-dagtype (Man–tors er udfyldt; Fredag/Lørdag/Søndag står som `cars: null` og viser
-en pladsholder, indtil de udfyldes). Format er dokumenteret i kommentaren over
+dagtype (alle fire dagtyper er udfyldt; en ny dagtype uden data sættes til
+`cars: null` og viser en pladsholder). Format er dokumenteret i kommentaren over
 blokken: en tur er `{ dep:"7:14", to:"AR"|"CMC", vagt:"1116", note:"..." }` —
 fra-sted og ankomst (+12 min) udledes automatisk.
 
-Fredags-/weekendplanernes TP-linjer skal aflæses fra de fysiske vagtplaner
-(samme metode som Man–tors) — se `../CLAUDE.md` i projektroden.
+Fredag/Lørdag/Søndag-blokkene er genereret maskinelt fra plansystemets
+CSV-eksport med `../scripts/tp_udtraek.py` (i hovedprojektet); Man–tors-blokken
+er den oprindelige håndlavede, som scriptet er valideret imod (identisk på alle
+38 ture).
 
-**Ved planskift** (ny planperiode) skal `DAYS`-datagrundlaget genaflæses — se
-roadmap i `../CLAUDE.md`.
+**Ved planskift** (ny planperiode): regenerér plan-JSON'erne fra nye CSV'er og
+kør `python scripts/tp_udtraek.py` i hovedprojektet — se roadmap i `../CLAUDE.md`.
 
 Siden viser bevidst **ingen førernavne** (kan tilføjes senere — datastrukturen
 er forberedt på et ekstra felt pr. tur).
