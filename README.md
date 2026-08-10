@@ -1,29 +1,27 @@
-# TP-bil oversigt — deploy
+# TP-bil oversigt — tp.kasper-krog.dk
 
 Statisk side (én fil, `index.html`, ingen dependencies). Viser TP-bilernes rotation
 pr. dagtype med interaktiv "hvor er bilerne kl. X"-visning. **Ingen persondata** —
-kun vagtnumre og tider.
+kun vagtnumre og tider. Siden er markeret `noindex`.
 
 Siden åbner i **"Nu"-tilstand**: tidspunktet sættes til klokken lige nu og følger
 med automatisk (opdaterer hvert 30. sekund + når fanen får fokus igen). Vælger
 brugeren selv et tidspunkt (felt, slider, presets, ◀/▶ eller klik på tidslinjen),
 slås Nu-tilstanden fra; et tryk på den udfyldte "Nu"-knap slår den til igen.
 
-## Hosting på tp.kasper-krog.dk (GitHub Pages)
+## Drift (opsat 10-08-2026)
 
-kasper-krog.dk kører allerede på GitHub Pages, så:
+| Hvad | Værdi |
+|---|---|
+| Repo | https://github.com/KasperKrog92/tp (public — krav for gratis GitHub Pages) |
+| Hosting | GitHub Pages, branch `main`, rod |
+| Domæne | `tp.kasper-krog.dk` (styret af `CNAME`-filen i repoet — slet/ret ikke) |
+| DNS | CNAME-record: navn `tp` → `kasperkrog92.github.io` (hos kasper-krog.dk's DNS-udbyder) |
+| HTTPS | GitHub udsteder certifikat automatisk, når DNS-recorden svarer. Slå derefter "Enforce HTTPS" til: repo → Settings → Pages (eller `gh api repos/KasperKrog92/tp/pages -X PUT -F https_enforced=true`) |
 
-1. Opret et nyt repo på GitHub, fx `tp` (kan være privat med GitHub Pro; ellers public).
-2. Læg `index.html` (og denne README) i repoets rod og push.
-3. Repo → Settings → Pages → Source: "Deploy from a branch" → `main` / rod.
-4. Samme side → Custom domain: skriv `tp.kasper-krog.dk` → Save. Slå "Enforce HTTPS" til, når certifikatet er klar (kan tage nogle minutter).
-5. Hos din DNS-udbyder (dér hvor kasper-krog.dk's DNS ligger): opret en **CNAME-record**:
-   - Navn/host: `tp`
-   - Værdi/peger på: `<dit-github-brugernavn>.github.io`
-6. Vent på DNS (typisk minutter) → siden svarer på https://tp.kasper-krog.dk
-
-Alternativ uden DNS-opsætning: læg filen som `tp/index.html` i det eksisterende
-website-repo → siden svarer på `kasper-krog.dk/tp`.
+**Opdatering af siden**: redigér `index.html` her i mappen → commit → `git push`.
+GitHub Pages bygger automatisk (typisk live på under et minut). Denne mappe er sit
+eget git-repo, adskilt fra resten af vagtplan-projektet.
 
 ## Opdatering af data
 
@@ -36,5 +34,8 @@ fra-sted og ankomst (+12 min) udledes automatisk.
 Fredags-/weekendplanernes TP-linjer skal aflæses fra de fysiske vagtplaner
 (samme metode som Man–tors) — se `../CLAUDE.md` i projektroden.
 
-Siden er markeret `noindex` og viser bevidst **ingen førernavne** (kan tilføjes
-senere — datastrukturen er forberedt på et ekstra felt pr. tur).
+**Ved planskift** (ny planperiode) skal `DAYS`-datagrundlaget genaflæses — se
+roadmap i `../CLAUDE.md`.
+
+Siden viser bevidst **ingen førernavne** (kan tilføjes senere — datastrukturen
+er forberedt på et ekstra felt pr. tur).
