@@ -122,7 +122,7 @@
 <body>
 <div class="wrap">
   <h1>TP-bil oversigt</h1>
-  <p class="sub">Letbanen · CMY = depot/parkeringscenter · AR = Aarhus H · alle ture er planlagt til 12 min</p>
+  <p class="sub">Letbanen · K26-køreplan · CMY = depot/parkeringscenter · AR = Aarhus H · alle ture er planlagt til 12 min</p>
 
   <div class="tabs" id="dayTabs"></div>
 
@@ -170,8 +170,8 @@
     <div style="margin-top:6px;font-size:13px">TP-linjerne skal aflæses fra dagens vagtplan — når de er lagt ind, virker fanen præcis som Man–tors.</div>
   </div>
 
-  <p class="foot">Tider efter midnat vises som 24:xx/25:xx (fx 25:42 = 01:42). Skriv fx <b>15:30</b>, <b>1530</b> eller <b>00:20</b> (tolkes som 24:20).
-  Grundlag: den gældende vagtplan; ved planskift skal datagrundlaget opdateres.</p>
+  <p class="foot">Tider efter midnat vises som 24:xx/25:xx (fx 25:42 = 01:42) — et driftsdøgn går fra 03:00 til 02:59. Skriv fx <b>15:30</b>, <b>1530</b> eller <b>00:20</b> (tolkes som 24:20).
+  <span id="planStamp"></span></p>
 </div>
 
 <div id="tip" role="tooltip"></div>
@@ -249,8 +249,14 @@ const DAYS = [
   { key: "sondag", label: "Søndag", dows: [0], warnings: [], cars: null },
 ];
 
+/* Planperiode — opdatér ved planskift (vises i footeren) */
+const PLAN = { navn: "K26", note: "normale hverdage", opdateret: "10-08-2026" };
+
 /* ============ hjælpere ============ */
 const T = s => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
+/* driftsdøgnet går fra 03:00 til 02:59 — før kl. 3 hører "nu" til gårsdagens plan */
+const OPS_DAY_START = 3;
+const opDow = d => d.getHours() < OPS_DAY_START ? (d.getDay() + 6) % 7 : d.getDay();
 const fmt = t => Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0");
 const DUR = 12;
 DAYS.forEach(day => (day.cars || []).forEach(c => c.moves.forEach(m => {
@@ -446,7 +452,7 @@ function parseTime(str) {
   if (!m) return null;
   let h = +m[1]; const min = +m[2];
   if (min > 59) return null;
-  if (h < 4) h += 24;
+  if (h < OPS_DAY_START) h += 24;
   return h * 60 + min;
 }
 input.addEventListener("change", () => {
@@ -468,7 +474,7 @@ let live = false;
 function nowMinutes() {
   const d = new Date();
   let t = d.getHours() * 60 + d.getMinutes();
-  if (d.getHours() < 4) t += 1440;
+  if (d.getHours() < OPS_DAY_START) t += 1440;
   return t;
 }
 function setLive(on) {
@@ -499,9 +505,11 @@ const presetsEl = document.getElementById("presets");
 
 /* ============ init ============ */
 const hashDay = DAYS.find(d => d.key === location.hash.replace("#", ""));
-const dowDay = DAYS.find(d => d.dows.includes(new Date().getDay()));
+const dowDay = DAYS.find(d => d.dows.includes(opDow(new Date())));
 selectDay(hashDay || dowDay || DAYS[0]);
 setLive(true);
+document.getElementById("planStamp").textContent =
+  "Grundlag: " + PLAN.navn + "-køreplanen (" + PLAN.note + ") · data opdateret " + PLAN.opdateret + ".";
 </script>
 </body>
 </html>
