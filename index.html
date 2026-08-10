@@ -333,7 +333,9 @@ function buildTimeline() {
     const l = document.createElement("div");
     l.className = "gline"; l.style.left = x + "%"; grid.appendChild(l);
     const lab = document.createElement("div");
-    lab.className = "glabel"; lab.style.left = x + "%"; lab.textContent = h + ":00"; grid.appendChild(lab);
+    lab.className = "glabel"; lab.style.left = x + "%"; lab.textContent = h + ":00";
+    if (h === 24) lab.style.transform = "translateX(-100%)";
+    grid.appendChild(lab);
   }
   tl.appendChild(grid);
   day.cars.forEach(car => {
