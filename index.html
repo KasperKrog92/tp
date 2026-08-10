@@ -26,10 +26,20 @@
       --chip-bg: rgba(255,255,255,0.07);
     }
   }
+  /* Eksplicit valg via tema-knappen — samme værdier som @media-blokken ovenfor */
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #fff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --c-cmc: #3987e5; --c-drive: #d95926; --c-ar: #199e70;
+    --chip-bg: rgba(255,255,255,0.07);
+  }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--page); color: var(--text-primary);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.45; }
-  .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 48px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 48px; position: relative; }
+  #themeBtn { position: absolute; top: 18px; right: 16px; font-size: 15px; line-height: 1; }
   h1 { font-size: 27px; margin: 10px 0 2px; text-align: center; letter-spacing: -0.01em; }
   .sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 16px; text-align: center; }
   .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
@@ -118,9 +128,19 @@
   .placeholder { text-align: center; padding: 48px 20px; color: var(--text-secondary); }
   .placeholder .big { font-size: 34px; margin-bottom: 8px; }
 </style>
+<script>
+/* Anvend gemt temavalg før første maling, så siden ikke blinker */
+(function () {
+  try {
+    var t = localStorage.getItem("tp_tema");
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
 <div class="wrap">
+  <button class="icon" id="themeBtn"></button>
   <h1>Hvor er TP-bilerne?</h1>
   <p class="sub">Letbanen · K26-køreplan</p>
 
@@ -638,6 +658,26 @@ document.getElementById("nextBtn").addEventListener("click", () => {
   const t = EVENTS.find(e => e > cur);
   if (t !== undefined) { setLive(false); setTime(t); }
 });
+/* ============ lys/mørk tilstand ============ */
+const themeBtn = document.getElementById("themeBtn");
+const darkMq = matchMedia("(prefers-color-scheme: dark)");
+function aktueltTema() {
+  return document.documentElement.dataset.theme || (darkMq.matches ? "dark" : "light");
+}
+function opdaterTemaKnap() {
+  const moerk = aktueltTema() === "dark";
+  themeBtn.textContent = moerk ? "☀️" : "🌙";
+  themeBtn.title = moerk ? "Skift til lys tilstand" : "Skift til mørk tilstand";
+  themeBtn.setAttribute("aria-label", themeBtn.title);
+}
+themeBtn.addEventListener("click", () => {
+  const nyt = aktueltTema() === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = nyt;
+  try { localStorage.setItem("tp_tema", nyt); } catch (e) {}
+  opdaterTemaKnap();
+});
+darkMq.addEventListener("change", opdaterTemaKnap);
+opdaterTemaKnap();
 /* ============ init ============ */
 const hashDay = DAYS.find(d => d.key === location.hash.replace("#", ""));
 const dowDay = DAYS.find(d => d.dows.includes(opDow(new Date())));
