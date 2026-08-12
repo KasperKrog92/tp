@@ -11,19 +11,21 @@
     color-scheme: light;
     --page: #f9f9f7; --surface-1: #fcfcfb;
     --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
-    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
-    --c-cmc: #2a78d6; --c-drive: #eb6834; --c-ar: #1baf7a;
-    --ink-on-cmc: #fff; --ink-on-ar: #0b0b0b;
-    --warn: #fab219; --chip-bg: rgba(11,11,11,0.05);
+    --grid: rgba(11,11,11,0.075); --baseline: #c3c2b7; --border: rgba(11,11,11,0.11);
+    --c-cmc: #216fd0; --c-drive: #7454d6; --c-drive-stripe: #927ae3; --c-ar: #159766;
+    --c-cmc-text: #1659a7; --c-drive-text: #5b3bb7; --c-ar-text: #0a7249;
+    --ink-on-cmc: #fff; --ink-on-ar: #fff; --ink-on-drive: #fff;
+    --warn: #d88900; --chip-bg: rgba(11,11,11,0.05); --focus: #397fe2;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
       --page: #0d0d0d; --surface-1: #1a1a19;
       --text-primary: #fff; --text-secondary: #c3c2b7; --text-muted: #898781;
-      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
-      --c-cmc: #3987e5; --c-drive: #d95926; --c-ar: #199e70;
-      --chip-bg: rgba(255,255,255,0.07);
+      --grid: rgba(255,255,255,0.075); --baseline: #474744; --border: rgba(255,255,255,0.11);
+      --c-cmc: #438eea; --c-drive: #8d72e8; --c-drive-stripe: #aa97ee; --c-ar: #27aa79;
+      --c-cmc-text: #78b6ff; --c-drive-text: #baaaf6; --c-ar-text: #62d9ac;
+      --chip-bg: rgba(255,255,255,0.07); --focus: #76adf1;
     }
   }
   /* Eksplicit valg via tema-knappen — samme værdier som @media-blokken ovenfor */
@@ -31,86 +33,99 @@
     color-scheme: dark;
     --page: #0d0d0d; --surface-1: #1a1a19;
     --text-primary: #fff; --text-secondary: #c3c2b7; --text-muted: #898781;
-    --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
-    --c-cmc: #3987e5; --c-drive: #d95926; --c-ar: #199e70;
-    --chip-bg: rgba(255,255,255,0.07);
+    --grid: rgba(255,255,255,0.075); --baseline: #474744; --border: rgba(255,255,255,0.11);
+    --c-cmc: #438eea; --c-drive: #8d72e8; --c-drive-stripe: #aa97ee; --c-ar: #27aa79;
+    --c-cmc-text: #78b6ff; --c-drive-text: #baaaf6; --c-ar-text: #62d9ac;
+    --chip-bg: rgba(255,255,255,0.07); --focus: #76adf1;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--page); color: var(--text-primary);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.45; }
   .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 48px; position: relative; }
-  #themeBtn { position: absolute; top: 18px; right: 16px; font-size: 15px; line-height: 1; }
-  h1 { font-size: 27px; margin: 10px 0 2px; text-align: center; letter-spacing: -0.01em; }
-  .sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 16px; text-align: center; }
-  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 16px; margin-bottom: 14px; }
+  #themeBtn { position: absolute; top: 18px; right: 16px; min-width: 76px; height: 38px; font-size: 13px; }
+  h1 { font-size: 28px; margin: 10px 90px 22px; text-align: center; letter-spacing: -0.025em; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 11px;
+    padding: 15px 18px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(11,11,11,.025); }
 
-  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; justify-content: center; }
-  .tab { font: inherit; font-size: 14px; padding: 7px 16px; border: 1px solid var(--baseline);
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; justify-content: center; }
+  .tab { font: inherit; font-size: 14px; min-height: 40px; padding: 8px 18px; border: 1px solid var(--baseline);
     border-radius: 999px; background: var(--surface-1); color: var(--text-primary); cursor: pointer; }
   .tab:hover { background: var(--chip-bg); }
   .tab.on { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); font-weight: 700; }
   .tab .d { font-size: 11px; opacity: .7; margin-left: 5px; }
 
-  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  #timeInput { width: 118px; font-size: 34px; font-weight: 700; text-align: left; padding: 0 4px;
+  .controls { display: flex; gap: 12px; align-items: center; min-height: 50px; }
+  #timeInput { width: 146px; font-size: 40px; font-weight: 750; line-height: 1.05; text-align: left; padding: 2px 5px;
     border: 1px solid transparent; border-radius: 8px; background: transparent;
     color: var(--text-primary); font-variant-numeric: tabular-nums; }
-  #timeInput:hover, #timeInput:focus { border-color: var(--baseline); background: var(--surface-1); outline: none; }
-  button { font: inherit; font-size: 13px; padding: 5px 11px; border: 1px solid var(--baseline);
+  #timeInput:hover, #timeInput:focus { border-color: var(--baseline); background: var(--surface-1); }
+  button { font: inherit; font-size: 13px; min-height: 36px; padding: 7px 12px; border: 1px solid var(--baseline);
     border-radius: 8px; background: var(--surface-1); color: var(--text-primary); cursor: pointer; }
   button:hover { background: var(--chip-bg); }
-  button.primary { border-color: var(--c-cmc); color: var(--c-cmc); font-weight: 600;
-    border-radius: 999px; padding: 5px 14px; }
-  button.primary.live { background: var(--c-cmc); color: var(--ink-on-cmc); }
-  button.primary.live:hover { background: var(--c-cmc); }
-  button.icon { width: 32px; height: 32px; padding: 0; font-size: 12px; }
+  button:focus-visible, input:focus-visible, [role="button"]:focus-visible { outline: 3px solid color-mix(in srgb, var(--focus) 40%, transparent); outline-offset: 2px; }
+  button.primary { border-color: transparent; color: var(--c-ar); background: color-mix(in srgb, var(--c-ar) 10%, transparent);
+    font-weight: 650; border-radius: 8px; padding: 7px 12px; white-space: nowrap; }
+  button.primary.live { color: var(--c-ar); background: color-mix(in srgb, var(--c-ar) 11%, transparent); }
+  button.primary:not(.live) { border-color: var(--baseline); color: var(--text-primary); background: var(--surface-1); }
+  button.icon { width: auto; min-width: 98px; height: 40px; padding: 0 13px; font-size: 13px; }
+  .event-nav { display: flex; gap: 8px; }
   .spacer { flex: 1; }
-  .hint { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .gps { font-size: 12.5px; color: var(--text-muted); margin-top: 9px; text-align: right; }
+  .gps { display: flex; justify-content: space-between; gap: 16px; font-size: 12.5px; color: var(--text-muted);
+    margin-top: 0; padding-top: 11px; border-top: 1px solid var(--grid); }
   .gps a { color: var(--c-cmc); font-weight: 600; text-decoration: none; }
   .gps a:hover { text-decoration: underline; }
   .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
 
-  .carlines { margin-top: 10px; border-top: 1px solid var(--grid); }
-  .carline { display: flex; gap: 10px; align-items: center; padding: 8px 0;
-    border-bottom: 1px solid var(--grid); font-size: 14px; }
-  .carline:last-child { border-bottom: none; padding-bottom: 2px; }
-  .carline .id { font-weight: 700; width: 46px; flex: none; font-variant-numeric: tabular-nums; }
-  .badge { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
-  .badge.cmc { background: color-mix(in srgb, var(--c-cmc) 15%, transparent); color: var(--c-cmc); }
-  .badge.ar { background: color-mix(in srgb, var(--c-ar) 15%, transparent); color: var(--c-ar); }
-  .badge.drive { background: color-mix(in srgb, var(--c-drive) 15%, transparent); color: var(--c-drive); }
-  .carline .next { margin-left: auto; color: var(--text-secondary); font-variant-numeric: tabular-nums;
-    text-align: right; }
+  .carlines { margin-top: 12px; border-top: 1px solid var(--grid); }
+  .carline { display: grid; grid-template-columns: 72px 138px minmax(0, 1fr) auto; gap: 12px; align-items: center;
+    min-height: 58px; padding: 10px 0; border-bottom: 1px solid var(--grid); font-size: 15px; }
+  .carline:last-child { border-bottom: none; }
+  .carline .id { font-size: 15px; font-weight: 750; flex: none; font-variant-numeric: tabular-nums; }
+  .badge { display: inline-flex; align-items: center; width: max-content; max-width: 100%; font-size: 13px;
+    font-weight: 700; line-height: 1.25; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
+  .badge.cmc { background: color-mix(in srgb, var(--c-cmc) 15%, transparent); color: var(--c-cmc-text); }
+  .badge.ar { background: color-mix(in srgb, var(--c-ar) 15%, transparent); color: var(--c-ar-text); }
+  .badge.drive { background: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--c-drive) 18%, transparent) 0 5px,
+    color-mix(in srgb, var(--c-drive-stripe) 9%, transparent) 5px 10px); color: var(--c-drive-text); }
+  .carline .next { min-width: 0; color: var(--text-secondary); font-variant-numeric: tabular-nums; text-align: right; }
+  .carline .eta { color: var(--text-secondary); font-size: 12.5px; font-variant-numeric: tabular-nums;
+    border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; white-space: nowrap; background: var(--chip-bg); }
+  .carline .done { grid-column: 3 / -1; text-align: right; color: var(--text-secondary); }
 
   .tl-scroll { overflow-x: auto; }
-  .tl { position: relative; min-width: 760px; padding: 26px 0 6px; }
+  .timeline-card { padding-top: 17px; }
+  .tl { position: relative; min-width: 780px; padding: 26px 0 6px; }
   .tl-grid { position: absolute; inset: 26px 0 6px 48px; }
   .tl-grid .gline { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
   .tl-grid .glabel { position: absolute; top: -20px; transform: translateX(-50%);
     font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .row { position: relative; height: 46px; display: flex; align-items: center; }
-  .row .lbl { width: 48px; flex: none; font-size: 12.5px; font-weight: 700; color: var(--text-secondary); }
+  .row .lbl { position: sticky; left: 0; z-index: 5; width: 48px; flex: none; font-size: 12.5px;
+    font-weight: 700; color: var(--text-secondary); background: var(--surface-1); }
   .track { position: relative; flex: 1; height: 100%; cursor: crosshair; }
   .seg { position: absolute; top: 50%; transform: translateY(-50%); height: 20px; border-radius: 4px; }
   .seg.cmc { background: var(--c-cmc); }
   .seg.ar { background: var(--c-ar); }
-  .seg.drive { background: var(--c-drive); height: 28px; min-width: 7px; z-index: 2; }
+  .seg.drive { background: repeating-linear-gradient(135deg, var(--c-drive) 0 5px, var(--c-drive-stripe) 5px 9px);
+    height: 28px; min-width: 7px; z-index: 2; }
   .seg .seglbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     font-size: 10.5px; font-weight: 700; letter-spacing: .04em; pointer-events: none; }
   .seg.cmc .seglbl { color: var(--ink-on-cmc); }
   .seg.ar .seglbl { color: var(--ink-on-ar); }
-  .warnmark { position: absolute; top: 1px; transform: translateX(-50%); font-size: 11px;
-    line-height: 1; z-index: 3; cursor: help; }
+  .warnmark { position: absolute; top: -2px; transform: translateX(-50%); width: 24px; height: 24px;
+    display: grid; place-items: center; color: var(--warn); font-size: 13px; line-height: 1; z-index: 3; cursor: pointer; }
   .cursor { position: absolute; top: 22px; bottom: 4px; width: 2px; margin-left: -1px;
-    background: var(--text-primary); opacity: .65; z-index: 4; pointer-events: none; }
+    background: var(--text-primary); opacity: .9; z-index: 4; pointer-events: none; }
   .cursor .bub { position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
     background: var(--text-primary); color: var(--page); font-size: 11px; font-weight: 700;
     padding: 1px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 18px; margin-top: 11px;
+    font-size: 12.5px; color: var(--text-secondary); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .drive-key { background: repeating-linear-gradient(135deg, var(--c-drive) 0 4px, var(--c-drive-stripe) 4px 7px) !important; }
+  .warn-key { color: var(--warn); font-size: 14px; font-weight: 800; }
 
   #tip { position: fixed; z-index: 50; display: none; max-width: 300px; background: var(--surface-1);
     color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px;
@@ -118,8 +133,9 @@
   #tip .t1 { font-weight: 700; }
   #tip .t2 { color: var(--text-secondary); }
 
-  details { margin-top: 4px; }
-  summary { cursor: pointer; font-size: 13.5px; color: var(--text-secondary); }
+  .table-card { padding-top: 12px; padding-bottom: 12px; }
+  details { margin-top: 0; }
+  summary { cursor: pointer; font-size: 13.5px; color: var(--text-primary); padding: 2px 0; }
   table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 13px; }
   th, td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--grid); }
   th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
@@ -127,6 +143,38 @@
   .foot { color: var(--text-muted); font-size: 12px; margin-top: 14px; text-align: center; }
   .placeholder { text-align: center; padding: 48px 20px; color: var(--text-secondary); }
   .placeholder .big { font-size: 34px; margin-bottom: 8px; }
+
+  @media (max-width: 700px) {
+    .wrap { padding: 14px 10px 36px; }
+    #themeBtn { position: static; display: block; margin: 0 0 12px auto; min-width: 72px; }
+    h1 { margin: -44px 76px 20px 0; text-align: left; font-size: 23px; line-height: 1.2; }
+    .tabs { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+    .tab { min-width: max-content; padding-inline: 15px; }
+    .card { padding: 13px 14px; border-radius: 10px; }
+    .controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; }
+    #timeInput { width: 132px; font-size: 36px; }
+    .controls .spacer { display: none; }
+    .event-nav { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    button.icon { width: 100%; min-width: 0; }
+    .carline { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 8px; min-height: 68px; }
+    .carline .id { grid-row: 1 / span 2; align-self: center; }
+    .carline .badge { grid-column: 2; }
+    .carline .next { grid-column: 2 / -1; text-align: left; font-size: 13.5px; }
+    .carline .eta { grid-column: 3; grid-row: 1; }
+    .carline .done { grid-column: 3; grid-row: 1; text-align: right; }
+    .gps { font-size: 12px; }
+    .legend { gap: 10px 16px; }
+    .table-card { overflow-x: auto; }
+  }
+
+  @media (max-width: 390px) {
+    h1 { font-size: 21px; }
+    #timeInput { width: 112px; font-size: 32px; }
+    button.primary { font-size: 12px; padding-inline: 9px; }
+    .carline { grid-template-columns: 52px minmax(0, 1fr); }
+    .carline .eta { grid-column: 2; grid-row: 3; justify-self: start; }
+    .carline .done { grid-column: 2; grid-row: 2; text-align: left; }
+  }
 </style>
 <script>
 /* Anvend gemt temavalg før første maling, så siden ikke blinker */
@@ -142,7 +190,6 @@
 <div class="wrap">
   <button class="icon" id="themeBtn"></button>
   <h1>Hvor er TP-bilerne?</h1>
-  <p class="sub">Letbanen · K26-køreplan</p>
 
   <div class="tabs" id="dayTabs"></div>
 
@@ -152,26 +199,27 @@
         <input id="timeInput" value="15:30" inputmode="numeric" aria-label="Klokkeslæt">
         <button class="primary" id="nowBtn" title="Følg klokken – opdaterer automatisk">Nu</button>
         <span class="spacer"></span>
-        <button class="icon" id="prevBtn" title="Forrige hændelse" aria-label="Forrige hændelse">◀</button>
-        <button class="icon" id="nextBtn" title="Næste hændelse" aria-label="Næste hændelse">▶</button>
+        <div class="event-nav">
+          <button class="icon" id="prevBtn" title="Forrige hændelse">◀&nbsp; Forrige</button>
+          <button class="icon" id="nextBtn" title="Næste hændelse">Næste &nbsp;▶</button>
+        </div>
       </div>
-      <div class="hint" id="liveHint"></div>
       <div class="carlines" id="carlines"></div>
-      <div class="gps">Befinder bilerne sig faktisk dér?
-        <a href="https://app.ecofleet.com/seeme/" target="_blank" rel="noopener">Tjek GPS i FleetComplete&nbsp;↗</a></div>
+      <div class="gps"><span>Viser planlagt placering</span>
+        <a href="https://app.ecofleet.com/seeme/" target="_blank" rel="noopener">Åbn live GPS&nbsp;↗</a></div>
     </div>
 
-    <div class="card">
+    <div class="card timeline-card">
       <div class="tl-scroll"><div class="tl" id="tl"></div></div>
       <div class="legend">
         <span><span class="dot" style="background:var(--c-cmc)"></span>CMC</span>
-        <span><span class="dot" style="background:var(--c-ar)"></span>AR</span>
-        <span><span class="dot" style="background:var(--c-drive)"></span>kører</span>
-        <span style="color:var(--text-muted)">Klik eller træk på tidslinjen for at vælge tidspunkt</span>
+        <span><span class="dot" style="background:var(--c-ar)"></span>Aarhus H</span>
+        <span><span class="dot drive-key"></span>Kører</span>
+        <span><span class="warn-key">⚠</span>Kort buffer ≤ 7 min</span>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card table-card">
       <details>
         <summary id="tblSummary">Alle ture som tabel</summary>
         <table id="tbl">
@@ -486,7 +534,20 @@ function showTip(html, ev) {
   if (y + hgt > innerHeight - 8) y = ev.clientY - hgt - pad;
   tip.style.left = x + "px"; tip.style.top = y + "px";
 }
+function showTipAtElement(html, el) {
+  tip.innerHTML = html; tip.style.display = "block";
+  const r = el.getBoundingClientRect();
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  let x = Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 8);
+  x = Math.max(8, x);
+  let y = r.bottom + 8;
+  if (y + hgt > innerHeight - 8) y = r.top - hgt - 8;
+  tip.style.left = x + "px"; tip.style.top = Math.max(8, y) + "px";
+}
 function hideTip() { tip.style.display = "none"; }
+document.addEventListener("click", ev => {
+  if (!ev.target.closest(".warnmark")) hideTip();
+});
 
 /* ============ tidslinje ============ */
 const tl = document.getElementById("tl");
@@ -516,16 +577,16 @@ function buildTimeline() {
       el.style.width = "calc(" + Math.max(pct(s.b) - pct(s.a), 0) + "% - 2px)";
       if (s.type !== "DRIVE" && (s.b - s.a) > 55) {
         const t = document.createElement("span");
-        t.className = "seglbl"; t.textContent = s.type; el.appendChild(t);
+        t.className = "seglbl"; t.textContent = s.type === "AR" ? "Aarhus H" : s.type; el.appendChild(t);
       }
       let html;
       if (s.type === "DRIVE") {
         const m = s.move;
-        html = "<div class='t1'>" + carName(car.id) + " kører " + m.from + " → " + m.to + "</div>" +
+        html = "<div class='t1'>" + carName(car.id) + " kører " + stedNavn(m.from) + " → " + stedNavn(m.to) + "</div>" +
                "<div class='t2'>" + fmt(m.dep) + "–" + fmt(m.arr) + " · vagt " + m.vagt + "<br>" + m.note + "</div>";
       } else {
-        const nextTxt = s.before ? "Næste tur: " + fmt(s.before.dep) + " → " + s.before.to + " med vagt " + s.before.vagt :
-          "ikke flere ture i dag";
+        const nextTxt = s.before ? "Næste tur: " + fmt(s.before.dep) + " → " + stedNavn(s.before.to) + " med vagt " + s.before.vagt :
+          "Færdig for i dag";
         html = "<div class='t1'>" + carName(car.id) + " står på " + (s.type === "CMC" ? "CMC" : "Aarhus H") + "</div>" +
                "<div class='t2'>" + fmt(s.a) + "–" + fmt(s.b) + "<br>" + nextTxt + "</div>";
       }
@@ -536,9 +597,24 @@ function buildTimeline() {
     day.warnings.filter(w => w.car === car.id).forEach(w => {
       const el = document.createElement("div");
       el.className = "warnmark"; el.style.left = pct(T(w.t)) + "%";
-      el.textContent = "⚠"; el.setAttribute("title", w.txt);
-      el.addEventListener("mousemove", ev => showTip("<div class='t1'>⚠ Stram overlevering</div><div class='t2'>" + w.txt + "</div>", ev));
+      el.textContent = "⚠";
+      el.setAttribute("role", "button"); el.setAttribute("tabindex", "0");
+      el.setAttribute("aria-label", "Kort buffer: " + w.txt);
+      const warningHtml = "<div class='t1'>⚠ Kort buffer ≤ 7 min</div><div class='t2'>" + w.txt + "</div>";
+      el.addEventListener("mousemove", ev => showTip(warningHtml, ev));
       el.addEventListener("mouseleave", hideTip);
+      el.addEventListener("focus", () => showTipAtElement(warningHtml, el));
+      el.addEventListener("blur", hideTip);
+      el.addEventListener("pointerdown", ev => ev.stopPropagation());
+      el.addEventListener("click", ev => {
+        ev.stopPropagation();
+        if (tip.style.display === "block") hideTip(); else showTipAtElement(warningHtml, el);
+      });
+      el.addEventListener("keydown", ev => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault(); ev.stopPropagation(); showTipAtElement(warningHtml, el);
+        }
+      });
       track.appendChild(el);
     });
     const timeAt = ev => {
@@ -567,26 +643,35 @@ function buildTimeline() {
 
 /* ============ status ============ */
 const carlinesEl = document.getElementById("carlines");
+const stedNavn = x => x === "AR" ? "Aarhus H" : x;
+function etaText(minutes) {
+  if (minutes <= 0) return "nu";
+  const h = Math.floor(minutes / 60), m = minutes % 60;
+  if (!h) return "om " + m + " min";
+  return "om " + h + " t" + (m ? " " + m + " min" : "");
+}
 function render(t) {
-  const stedNavn = x => x === "AR" ? "Aarhus H" : x;
   carlinesEl.innerHTML = day.cars.map(car => {
     const s = carState(car, t);
-    let badge, next, title;
+    let badge, next, eta = "", title;
     if (s.st === "DRIVE") {
-      badge = "<span class='badge drive'>kører → " + stedNavn(s.move.to) + "</span>";
-      next = "ankomst " + fmt(s.move.arr) + " · " + s.move.vagt;
-      title = carName(car.id) + " kører " + s.move.from + " → " + s.move.to + " " + fmt(s.move.dep) + "–" + fmt(s.move.arr) +
+      badge = "<span class='badge drive'>↗ Kører</span>";
+      next = "<span class='next'>Ankomst " + fmt(s.move.arr) + " · " + stedNavn(s.move.to) + " · vagt " + s.move.vagt + "</span>";
+      eta = "<span class='eta'>" + etaText(s.move.arr - t) + "</span>";
+      title = carName(car.id) + " kører " + stedNavn(s.move.from) + " → " + stedNavn(s.move.to) + " " + fmt(s.move.dep) + "–" + fmt(s.move.arr) +
         " (vagt " + s.move.vagt + "). " + s.move.note +
-        (s.next ? ". Derefter: " + fmt(s.next.dep) + " → " + s.next.to + " med vagt " + s.next.vagt : "");
+        (s.next ? ". Derefter: " + fmt(s.next.dep) + " → " + stedNavn(s.next.to) + " med vagt " + s.next.vagt : "");
     } else {
       badge = "<span class='badge " + s.st.toLowerCase() + "'>" + stedNavn(s.st) + "</span>";
-      next = s.next ? fmt(s.next.dep) + " → " + stedNavn(s.next.to) + " · " + s.next.vagt : "ikke flere ture i dag";
+      next = s.next ? "<span class='next'>" + fmt(s.next.dep) + " → " + stedNavn(s.next.to) + " · vagt " + s.next.vagt + "</span>" :
+        "<span class='done'>Færdig for i dag</span>";
+      eta = s.next ? "<span class='eta'>" + etaText(s.next.dep - t) + "</span>" : "";
       title = carName(car.id) + " står på " + (s.st === "CMC" ? "CMC" : "Aarhus H") + " " +
         (s.since ? "siden " + fmt(s.since) + (s.lastMove ? ", stillet af vagt " + s.lastMove.vagt : "") : "fra driftsdøgnets start") +
-        (s.next ? ". Næste tur: " + fmt(s.next.dep) + " → " + s.next.to + " med vagt " + s.next.vagt : ". Ikke flere ture i dag");
+        (s.next ? ". Næste tur: " + fmt(s.next.dep) + " → " + stedNavn(s.next.to) + " med vagt " + s.next.vagt : ". Færdig for i dag");
     }
     return "<div class='carline' title=\"" + title + "\"><span class='id'>" + carName(car.id) + "</span>" +
-      badge + "<span class='next'>" + next + "</span></div>";
+      badge + next + eta + "</div>";
   }).join("");
   cursor.style.left = "calc(48px + (100% - 48px) * " + ((t - AXIS_MIN) / (AXIS_MAX - AXIS_MIN)) + ")";
   cursor.querySelector(".bub").textContent = fmt(t);
@@ -598,7 +683,7 @@ function buildTable() {
   document.getElementById("tblSummary").textContent = "Alle " + all.length + " ture som tabel";
   document.querySelector("#tbl tbody").innerHTML = all.map(m =>
     "<tr><td>" + carName(m.car) + "</td><td class='num'>" + fmt(m.dep) + "</td><td class='num'>" + fmt(m.arr) + "</td>" +
-    "<td>" + m.from + " → " + m.to + "</td><td class='num'>" + m.vagt + "</td><td>" + m.note + "</td></tr>"
+    "<td>" + stedNavn(m.from) + " → " + stedNavn(m.to) + "</td><td class='num'>" + m.vagt + "</td><td>" + m.note + "</td></tr>"
   ).join("");
 }
 
@@ -640,9 +725,9 @@ function nowMinutes() {
 function setLive(on) {
   live = on;
   nowBtn.classList.toggle("live", on);
-  document.getElementById("liveHint").textContent = on ?
-    "Følger klokken — klik på tidslinjen for at se et andet tidspunkt" :
-    "Valgt tidspunkt — tryk Nu for at følge klokken igen";
+  nowBtn.innerHTML = on ? "<span aria-hidden='true'>●</span>&nbsp; NU · følger klokken" : "Tilbage til nu";
+  nowBtn.title = on ? "Siden følger klokken automatisk" : "Gå tilbage til det aktuelle tidspunkt";
+  nowBtn.setAttribute("aria-label", nowBtn.title);
   if (on) setTime(nowMinutes());
 }
 nowBtn.addEventListener("click", () => setLive(true));
@@ -666,7 +751,7 @@ function aktueltTema() {
 }
 function opdaterTemaKnap() {
   const moerk = aktueltTema() === "dark";
-  themeBtn.textContent = moerk ? "☀️" : "🌙";
+  themeBtn.textContent = moerk ? "☀ Lys" : "◐ Mørk";
   themeBtn.title = moerk ? "Skift til lys tilstand" : "Skift til mørk tilstand";
   themeBtn.setAttribute("aria-label", themeBtn.title);
 }

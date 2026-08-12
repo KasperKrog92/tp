@@ -10,8 +10,9 @@ hvor TP-bilerne holder) — ikke CMY, som specifikt er togenes opstillingsområd
 
 Siden åbner i **"Nu"-tilstand**: tidspunktet sættes til klokken lige nu og følger
 med automatisk (opdaterer hvert 30. sekund + når fanen får fokus igen). Vælger
-brugeren selv et tidspunkt (felt, slider, presets, ◀/▶ eller klik på tidslinjen),
-slås Nu-tilstanden fra; et tryk på den udfyldte "Nu"-knap slår den til igen.
+brugeren selv et tidspunkt (felt, ◀ Forrige/Næste ▶ eller tidslinjen), skifter
+knappen til "Tilbage til nu". Advarsler på tidslinjen kan åbnes med både mus,
+tastatur og touch.
 
 ## Drift (opsat 10-08-2026)
 
