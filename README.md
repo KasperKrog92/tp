@@ -1,48 +1,69 @@
 # TP-bil oversigt — tp.kasper-krog.dk
 
-Statisk side (én fil, `index.html`, ingen dependencies). Viser TP-bilernes rotation
-pr. dagtype med interaktiv "hvor er bilerne kl. X"-visning. **Ingen persondata** —
-kun vagtnumre og tider. Siden er markeret `noindex`.
+Statisk GitHub Pages-side med **dagens faktiske TP-plan fra OnlinePlan**.
+Kun den aktuelle driftsdato vises; ingen dagsfaner eller datovælger. Ingen
+førernavne eller førernumre offentliggøres. Siden er markeret `noindex`.
 
-Terminologi: siden bruger **CMC** (området med kontrolcenter og førerbygning,
-hvor TP-bilerne holder) — ikke CMY, som specifikt er togenes opstillingsområde
-(Y = yard). CMC er den forkortelse, førerne bruger i daglig tale om stedet.
+## Automatisk opdatering
 
-Siden åbner i **"Nu"-tilstand**: tidspunktet sættes til klokken lige nu og følger
-med automatisk (opdaterer hvert 30. sekund + når fanen får fokus igen). Vælger
-brugeren selv et tidspunkt (felt, ◀ Forrige/Næste ▶ eller tidslinjen), skifter
-knappen til "Tilbage til nu". Advarsler på tidslinjen kan åbnes med både mus,
-tastatur og touch.
+GitHub Actions i det **private** `KasperKrog92/vagtplan`-repo kører
+`.github/workflows/tp-publish.yml` to gange dagligt: 03:25 og 11:05 UTC
+(04:25/05:25 og 12:05/13:05 dansk tid). Ingen lokal computer skal være tændt.
+Workflowet kan også startes manuelt med **Run workflow**.
 
-## Drift (opsat 10-08-2026)
+`server/tp_publish.py` henter datoens faktiske vagtsæt og læser TP-turene fra
+OnlinePlans synlige vagtforløb. Hver dato skal være komplet og valideret:
+vagtinventar, gyldighed, mødetider, samkørsel, 12 minutters ture, ingen overlap,
+skiftende retninger og start/slut på CMC. Kun eksplicit udvalgte felter eksporteres;
+navne i OnlinePlans samkørselsnoter fjernes. Fejl beholder tidligere dagsfiler;
+workflowet prøver igen op til tre gange og melder fejl i GitHub Actions.
+
+Der hentes **i dag og i morgen**, så planen er klar ved driftsdøgnskiftet kl. 04
+**Europe/Copenhagen**, også ved skift mellem sommer- og vintertid. Morgendagen
+kan ikke vælges på siden. Dagsfiler ældre end syv dage ryddes automatisk.
+
+Browseren kontrollerer dagsfilen hvert femte minut og ved genåbning af fanen.
+Den skifter selv driftsdato (kontrol hvert 30. sekund). Sidste gyldige plan for
+**samme dato** gemmes lokalt, så en netværksfejl ikke fjerner den; der vises en
+advarsel. En plan hentet for mere end 18 timer siden mærkes også tydeligt.
+Hvis dagens fil mangler, vises en besked om at kontrollere OnlinePlan.
+Gårsdagens plan eller en gammel standardplan vises aldrig som dagens plan.
+
+Tidsstyring, statusoversigt, tidslinje, samkørsel, bufferadvarsler og rotationstabel
+bevares. Siden åbner i **Nu**-tilstand og følger klokken hvert 30. sekund;
+manuelt valgt tid bevares, også når dagsdata opdateres. Tidslinjen dækker 04–28,
+så natkørsel er med. Placeringerne er **planlagte**; linket til live GPS bevares.
+CMC er området med kontrolcenter/førerbygning, hvor TP-bilerne holder.
+
+## Dataformat
+
+`data/dage/YYYY-MM-DD.json`:
+
+```json
+{"schema":1,"dato":"2026-09-08","kilde":"OnlinePlan","hentet":"2026-09-08T15:57:00+02:00",
+ "cars":[{"id":"TP-001","moves":[
+   {"dep":"8:00","arr":"8:12","to":"AR","vagt":"51101","note":"Medtager vagt 51102"},
+   {"dep":"8:12","arr":"8:24","to":"CMC","vagt":"51103","note":""}]}],
+ "warnings":[{"car":"TP-001","t":"8:12","txt":"0 min buffer på AR"}]}
+```
+
+Tider normaliseres til driftsminutter (fx 25:12). Ingen rå HTML eller fri tekst
+fra OnlinePlan publiceres. Frontenden kontrollerer dato/format/rotation og
+escaper noter, før de vises. Datastrukturen har ingen bemandingsfelter.
+
+## Drift og publicering
 
 | Hvad | Værdi |
 |---|---|
-| Repo | https://github.com/KasperKrog92/tp (public — krav for gratis GitHub Pages) |
-| Hosting | GitHub Pages, branch `main`, rod |
-| Domæne | `tp.kasper-krog.dk` (styret af `CNAME`-filen i repoet — slet/ret ikke) |
-| DNS | CNAME-record: navn `tp` → `kasperkrog92.github.io` (hos kasper-krog.dk's DNS-udbyder) |
-| HTTPS | GitHub udsteder certifikat automatisk, når DNS-recorden svarer. Slå derefter "Enforce HTTPS" til: repo → Settings → Pages (eller `gh api repos/KasperKrog92/tp/pages -X PUT -F https_enforced=true`) |
+| Offentligt repo | https://github.com/KasperKrog92/tp |
+| Hosting | GitHub Pages, `main`, rod |
+| Domæne | https://tp.kasper-krog.dk — eksisterende `CNAME` bevares |
+| OnlinePlan-login | Eksisterende `ONLINEPLAN_USER`/`ONLINEPLAN_PASS` Actions-secrets i det private repo |
+| Skriveadgang | Særskilt `TP_DEPLOY_KEY`-secret og skrive-deploy-nøgle på TP-repoet |
+| Datahentning | `python server/tp_publish.py --push` i hovedrepoet |
+| Fejl | GitHub Actions → Publicér dagens TP-plan; rettet kilde/genkørsel erstatter automatisk en gammel dagsfil |
 
-**Opdatering af siden**: redigér `index.html` her i mappen → commit → `git push`.
-GitHub Pages bygger automatisk (typisk live på under et minut). Denne mappe er sit
-eget git-repo, adskilt fra resten af vagtplan-projektet.
-
-## Opdatering af data
-
-Al data ligger i `DAYS`-blokken øverst i `index.html`'s `<script>` — én blok pr.
-dagtype (alle fire dagtyper er udfyldt; en ny dagtype uden data sættes til
-`cars: null` og viser en pladsholder). Format er dokumenteret i kommentaren over
-blokken: en tur er `{ dep:"7:14", to:"AR"|"CMC", vagt:"1116", note:"..." }` —
-fra-sted og ankomst (+12 min) udledes automatisk.
-
-Fredag/Lørdag/Søndag-blokkene er genereret maskinelt fra plansystemets
-CSV-eksport med `../scripts/tp_udtraek.py` (i hovedprojektet); Man–tors-blokken
-er den oprindelige håndlavede, som scriptet er valideret imod (identisk på alle
-38 ture).
-
-**Ved planskift** (ny planperiode): regenerér plan-JSON'erne fra nye CSV'er og
-kør `python scripts/tp_udtraek.py` i hovedprojektet — se roadmap i `../CLAUDE.md`.
-
-Siden viser bevidst **ingen førernavne** (kan tilføjes senere — datastrukturen
-er forberedt på et ekstra felt pr. tur).
+Ved kodeændringer: test, commit og push **TP-repoet først**, derefter
+submodule-pointer og tilhørende kode/docs i hovedrepoet. Ved almindelige
+køreplansskift kræves ingen manuel dataændring; dagsfeedet følger OnlinePlan.
+Gamle indbyggede `DAYS`-standardplaner bruges ikke længere.
