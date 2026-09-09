@@ -31,8 +31,9 @@ Gårsdagens plan eller en gammel standardplan vises aldrig som dagens plan.
 
 Tidsstyring, statusoversigt, tidslinje, samkørsel, bufferadvarsler og rotationstabel
 bevares. Siden åbner i **Nu**-tilstand og følger klokken hvert 30. sekund;
-manuelt valgt tid bevares, også når dagsdata opdateres. Tidslinjen dækker 04–28,
-så natkørsel er med. Placeringerne er **planlagte**; linket til live GPS bevares.
+manuelt valgt tid bevares, også når dagsdata opdateres. Tidslinjen dækker fra 30 minutter før dagens første afgang til 30 minutter
+efter dagens sidste ankomst på tværs af alle biler, også ved natkørsel. Uret
+og statusoversigten følger fortsat den valgte tid; markøren skjules uden for udsnittet. Placeringerne er **planlagte**; linket til live GPS bevares.
 CMC er området med kontrolcenter/førerbygning, hvor TP-bilerne holder.
 
 ## Dataformat

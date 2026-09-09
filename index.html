@@ -250,7 +250,7 @@ const OPS_DAY_START = 4;
 const fmt = t => Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0");
 /* vises som TP-1 … TP-4 (data-id'erne er stadig TP-001 …) */
 const carName = id => id.replace(/^TP-0+/, "TP-");
-const AXIS_MIN = 240, AXIS_MAX = 1680;
+let AXIS_MIN = 240, AXIS_MAX = 1680;
 const pct = t => (t - AXIS_MIN) / (AXIS_MAX - AXIS_MIN) * 100;
 
 let day = { cars: null, warnings: [] };
@@ -268,6 +268,8 @@ function selectDay(d) {
   }
   appArea.style.display = ""; phArea.style.display = "none";
   EVENTS = [...new Set(d.cars.flatMap(c => c.moves.flatMap(m => [m.dep, m.arr])))].sort((a, b) => a - b);
+  AXIS_MIN = EVENTS.length ? EVENTS[0] - 30 : 240;
+  AXIS_MAX = EVENTS.length ? EVENTS[EVENTS.length - 1] + 30 : 1680;
   buildTimeline(); buildTable();
   setTime(cur);
 }
@@ -325,14 +327,15 @@ function buildTimeline() {
   tl.innerHTML = "";
   const grid = document.createElement("div");
   grid.className = "tl-grid";
-  for (let h = 4; h <= 28; h++) {
+  for (let h = Math.ceil(AXIS_MIN / 60); h * 60 <= AXIS_MAX; h++) {
     const x = pct(h * 60);
     const l = document.createElement("div");
     l.className = "gline"; l.style.left = x + "%"; grid.appendChild(l);
     if (h % 2) continue;
     const lab = document.createElement("div");
     lab.className = "glabel"; lab.style.left = x + "%"; lab.textContent = h + ":00";
-    if (h === 28) lab.style.transform = "translateX(-100%)";
+    if (x > 97) lab.style.transform = "translateX(-100%)";
+    if (x < 3) lab.style.transform = "none";
     grid.appendChild(lab);
   }
   tl.appendChild(grid);
@@ -443,6 +446,7 @@ function render(t) {
     return "<div class='carline' title=\"" + title + "\"><span class='id'>" + carName(car.id) + "</span>" +
       badge + next + eta + "</div>";
   }).join("");
+  cursor.style.display = t < AXIS_MIN || t > AXIS_MAX ? "none" : "";
   cursor.style.left = "calc(48px + (100% - 48px) * " + ((t - AXIS_MIN) / (AXIS_MAX - AXIS_MIN)) + ")";
   cursor.querySelector(".bub").textContent = fmt(t);
 }
@@ -460,7 +464,8 @@ function buildTable() {
 /* ============ tidsstyring ============ */
 const input = document.getElementById("timeInput");
 function setTime(t) {
-  cur = Math.max(AXIS_MIN, Math.min(AXIS_MAX, Math.round(t)));
+  // Tidslinjens udsnit må ikke flytte det aktuelle ur eller statusoversigten.
+  cur = Math.max(240, Math.min(1680, Math.round(t)));
   input.value = fmt(cur);
   if (day.cars) render(cur);
 }
