@@ -571,7 +571,7 @@ function validatePlan(data, date) {
     let loc = "CMC", end = 240;
     const moves = car.moves.map(m => {
       if (!time(m.dep) || !time(m.arr) || !["AR", "CMC"].includes(m.to) ||
-          !/^\d+$/.test(m.vagt) || typeof m.note !== "string" ||
+          !/^\d+(?:, \d+)*$/.test(m.vagt) || typeof m.note !== "string" ||
           T(m.arr) - T(m.dep) !== 12 || T(m.dep) < end || m.to === loc) throw Error("Ugyldig tur");
       loc = m.to; end = T(m.arr);
       return {dep: T(m.dep), arr: end, to: m.to, from: m.to === "AR" ? "CMC" : "AR",

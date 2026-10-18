@@ -68,3 +68,10 @@ Ved kodeændringer: test, commit og push **TP-repoet først**, derefter
 submodule-pointer og tilhørende kode/docs i hovedrepoet. Ved almindelige
 køreplansskift kræves ingen manuel dataændring; dagsfeedet følger OnlinePlan.
 Gamle indbyggede `DAYS`-standardplaner bruges ikke længere.
+
+### Samkørsel uden angivet fører
+
+Identiske ture på samme bil fra flere vagter vises som én tur. Feltet `vagt`
+kan derfor være fx `1101, 1106`, med noten `Samkørsel · fører ikke angivet`.
+Numrene er deltagende vagter; rækkefølgen udpeger ikke en fører. Eksisterende
+enkeltnumre og eksplicitte medtag-noter understøttes fortsat.
