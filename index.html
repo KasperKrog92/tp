@@ -144,6 +144,17 @@
   .placeholder { text-align: center; padding: 48px 20px; color: var(--text-secondary); }
   .placeholder .big { font-size: 34px; margin-bottom: 8px; }
 
+  /* Midlertidigt lukket: fjern class="lukket" på <body> for at genåbne */
+  .lukket-besked { display: none; }
+  .lukket .lukket-besked { display: block; max-width: 560px; margin: 8px auto 0; padding: 26px 24px; text-align: center; }
+  .lukket .lukket-besked h2 { font-size: 20px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .lukket .lukket-besked p { margin: 0 0 10px; color: var(--text-secondary); }
+  .lukket .lukket-besked p:last-child { margin-bottom: 0; }
+  .lukket .lukket-besked a { color: var(--c-cmc); font-weight: 600; text-decoration: none; }
+  .lukket .lukket-besked a:hover { text-decoration: underline; }
+  .lukket #dayLabel, .lukket #feedStatus, .lukket #appArea,
+  .lukket #placeholderArea, .lukket .foot { display: none !important; }
+
   @media (max-width: 700px) {
     .wrap { padding: 14px 10px 36px; }
     #themeBtn { position: static; display: block; margin: 0 0 12px auto; min-width: 72px; width: auto; }
@@ -186,10 +197,17 @@
 })();
 </script>
 </head>
-<body>
+<body class="lukket">
 <div class="wrap">
   <button class="icon" id="themeBtn"></button>
   <h1>Hvor er TP-bilerne?</h1>
+
+  <div class="card lukket-besked" role="status">
+    <h2>Værktøjet er midlertidigt lukket</h2>
+    <p>TP-planen opdateres ikke længere automatisk, fordi den gratis løsning, siden har kørt på, ikke er holdbar i længden.</p>
+    <p>Indtil videre: Se dagens plan i OnlinePlan, og følg bilerne på
+      <a href="https://app.ecofleet.com/seeme/" target="_blank" rel="noopener">live GPS&nbsp;↗</a></p>
+  </div>
 
   <p id="dayLabel" style="text-align:center"></p>
   <p id="feedStatus" role="status" style="text-align:center"></p>
