@@ -4,6 +4,11 @@ Statisk GitHub Pages-side med **dagens faktiske TP-plan fra OnlinePlan**.
 Kun den aktuelle driftsdato vises; ingen dagsfaner eller datovælger. Ingen
 førernavne eller førernumre offentliggøres. Siden er markeret `noindex`.
 
+**Status: midlertidigt lukket siden 19-10-2026.** Siden viser en lukkebesked i
+stedet for planen, og det automatiske workflow er deaktiveret. Genåbning kræver
+begge dele: fjern `class="lukket"` på `<body>` i `index.html`, og slå workflowet
+til igen. Resten af denne fil beskriver driften, når siden er åben.
+
 ## Automatisk opdatering
 
 GitHub Actions i det **private** `KasperKrog92/vagtplan`-repo kører
