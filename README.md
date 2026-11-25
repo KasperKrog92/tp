@@ -4,10 +4,9 @@ Statisk GitHub Pages-side med **dagens faktiske TP-plan fra OnlinePlan**.
 Kun den aktuelle driftsdato vises; ingen dagsfaner eller datovælger. Ingen
 førernavne eller førernumre offentliggøres. Siden er markeret `noindex`.
 
-**Status: midlertidigt lukket siden 19-10-2026.** Siden viser en lukkebesked i
-stedet for planen, og det automatiske workflow er deaktiveret. Genåbning kræver
-begge dele: fjern `class="lukket"` på `<body>` i `index.html`, og slå workflowet
-til igen. Resten af denne fil beskriver driften, når siden er åben.
+**Status: genåbnet 25-11-2026** (var lukket 19-10–25-11-2026). Lukkebeskeden
+ligger fortsat i `index.html` og vises igen ved at sætte `class="lukket"` på
+`<body>`; luk i så fald også workflowet `tp-publish.yml` i hovedrepoet.
 
 ## Automatisk opdatering
 
