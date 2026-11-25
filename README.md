@@ -6,12 +6,14 @@ førernavne eller førernumre offentliggøres. Siden er markeret `noindex`.
 
 **Status: genåbnet 25-11-2026** (var lukket 19-10–25-11-2026). Lukkebeskeden
 ligger fortsat i `index.html` og vises igen ved at sætte `class="lukket"` på
-`<body>`; luk i så fald også workflowet `tp-publish.yml` i hovedrepoet.
+`<body>`; luk i så fald også workflowet `publish.yml` i dette repo.
 
 ## Automatisk opdatering
 
-GitHub Actions i det **private** `KasperKrog92/vagtplan`-repo kører
-`.github/workflows/tp-publish.yml` to gange dagligt: 03:25 og 11:05 UTC
+GitHub Actions i **dette offentlige** repo kører `.github/workflows/publish.yml`
+(flyttet fra det private vagtplan-repo 25-11-2026 for de gratis Actions-minutter;
+koden hentes fra vagtplan med læse-nøglen `VAGTPLAN_DEPLOY_KEY`, og loggen er
+offentlig) to gange dagligt: 03:25 og 11:05 UTC
 (04:25/05:25 og 12:05/13:05 dansk tid). Ingen lokal computer skal være tændt.
 Workflowet kan også startes manuelt med **Run workflow**.
 
@@ -63,9 +65,9 @@ escaper noter, før de vises. Datastrukturen har ingen bemandingsfelter.
 | Offentligt repo | https://github.com/KasperKrog92/tp |
 | Hosting | GitHub Pages, `main`, rod |
 | Domæne | https://tp.kasper-krog.dk — eksisterende `CNAME` bevares |
-| OnlinePlan-login | Eksisterende `ONLINEPLAN_USER`/`ONLINEPLAN_PASS` Actions-secrets i det private repo |
-| Skriveadgang | Særskilt `TP_DEPLOY_KEY`-secret og skrive-deploy-nøgle på TP-repoet |
-| Datahentning | `python server/tp_publish.py --push` i hovedrepoet |
+| OnlinePlan-login | `ONLINEPLAN_USER`/`ONLINEPLAN_PASS` Actions-secrets i dette repo |
+| Skriveadgang | `GITHUB_TOKEN` (`contents: write`); koden læses fra vagtplan med `VAGTPLAN_DEPLOY_KEY` |
+| Datahentning | `python server/tp_publish.py --site tp-site --push` (vagtplan-koden på runneren) |
 | Fejl | GitHub Actions → Publicér dagens TP-plan; rettet kilde/genkørsel erstatter automatisk en gammel dagsfil |
 
 Ved kodeændringer: test, commit og push **TP-repoet først**, derefter
